@@ -1,0 +1,185 @@
+<!--
+        auteur :    Emmanuel
+        date :  2023       
+-->
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Click Bouton</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
+    <style type="text/css">
+      #main {
+        background-color:silver;
+        height: 900px;
+      }
+
+      #btnClick {
+        margin: 50px;
+      }
+
+      p {
+        margin: 50px 0;
+        font-size: 1.5em;
+      }
+
+      h1 {
+        margin-top: 1cm;
+      }
+
+      #resume {
+        padding-left: 40%;
+        text-align: left;
+      }
+
+      #tableBilan{
+        border: solid; 
+        width: 50%;
+        margin-left: auto; 
+        margin-right: auto;
+      }
+
+      .gold-bold {
+        font-size: 150%;
+        color: gold;
+        font-weight: bold;        
+      }
+    </style>
+    <script>
+      var nombreClick = 0;
+      const limiteClick = 20;
+      var aResumeGame = [];
+      var aResumeGameContent = "";
+      var table = document.querySelector("#tableBilan");
+
+      function compterClick() {
+        if (nombreClick == 0) 
+            tempDebut = new Date(); // initialiser le temps lorsqu'aucun clic n'est encore fait
+
+        nombreClick++;
+        document.querySelector("#infoClick").innerHTML = nombreClick;
+
+        if (nombreClick == limiteClick) {
+          let tempsFin = new Date(); // prendre le temps au dernier clic
+
+          document.querySelector("#btnClick").disabled = true;
+
+          let tempsEcoule = tempsFin.getTime() - tempDebut.getTime();
+
+          document.querySelector("#message").innerHTML = `"Tu as cliqué 20 fois en ${tempsEcoule} millisecondes"`;
+
+          aResumeGame.push(tempsEcoule);          
+        }        
+
+        let aResumeGameContent = "";
+
+        for (let i = 0; i < aResumeGame.length; i++) {
+            aResumeGameContent += `<h4><ol start='${i + 1}'><li>${aResumeGame[i]} ms</li></ol></h4>`;
+        }
+
+        document.querySelector("#resume").innerHTML = aResumeGameContent;   // afficher la liste d'éléments
+      }
+
+      function resetJeu() {
+        nombreClick = 0;
+        document.querySelector("#infoClick").innerHTML = nombreClick;
+        document.querySelector("#btnClick").disabled = false;
+        document.querySelector("#message").innerHTML = "";
+        bilan.style.display = "none";
+        resume.style.display = "block";
+      }
+
+      function bilanJeu() {
+        document.querySelector("#message").innerHTML = 'Voici le récapitulatif de votre partie:'
+        if (getComputedStyle(resume).display != "none" || getComputedStyle(bilan).display != "block") {
+          resume.style.display = "none";    // cacher la liste d'éléments
+          bilan.style.display = "block";    // rendre visible le tableau bilan
+        } else {
+          resume.style.display = "block";   // rendre visible la liste d'éléments
+          bilan.style.display = "none";     // cacher le tableau bilan
+        }
+         
+        // Sélectionnez le corps du tableau
+        let tbody = document.querySelector("#tableBilan tbody");
+
+        // Effacez le contenu existant du corps du tableau
+        tbody.innerHTML = '';
+
+        // Créez le reste du tableau avec les données de aResumeGame
+        for (let i = 0; i < aResumeGame.length; i++) {
+        let row = tbody.insertRow(i);
+        let cell1 = row.insertCell(0);
+        let cell2 = row.insertCell(1);
+        cell1.innerHTML = i+1 ;
+        cell2.innerHTML = aResumeGame[i];
+        }        
+      }
+
+      function trierTableau(){
+        aResumeGame.sort(function(a, b){return a-b});  // Tri croissant avec la fonction sort()
+
+        // Sélectionnez le corps du tableau
+        let tbody = document.querySelector("#tableBilan tbody");
+
+        // Effacez le contenu existant du corps du tableau
+        tbody.innerHTML = '';
+
+        // afficher après le tri
+        for (let i = 0; i < aResumeGame.length; i++) {
+        let row = tbody.insertRow(i);
+        let cell1 = row.insertCell(0);
+        let cell2 = row.insertCell(1);
+        cell2.innerHTML = aResumeGame[i];
+      }
+
+      td = document.querySelectorAll("#tableBilan tbody td")[0];
+      td1 = document.querySelectorAll("#tableBilan tbody td")[1];
+      td.innerHTML = "Meilleur coup";
+
+      // Appliquer du css au contenu des 2 1eres cellules
+      td.classList.add("gold-bold");
+      td1.classList.add("gold-bold");
+    }
+    </script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col"></div>
+        <div id="main" class="col-10">
+          <form name="frmClique">
+            <div class="text-center">
+              <h1>Le clique rapide!!</h1>
+              <p>Tu dois cliquer 20 fois le plus rapidement possible</p>
+              <input type="button" class="btn btn-primary btn-lg" value="Clique Moi!" id="btnClick" name="btnClick" onclick="compterClick()"/>
+              <br />
+              <input type="button" value="Rejouer" class="btn btn-success btn-lg" id="btnRejouer" name="btnRejouer" onclick="resetJeu()"/>
+              &nbsp;&nbsp;&nbsp;
+              <input type="button" value="Tableau bilan" class="btn btn-success btn-lg" id="btnBilan" name="btnBilan" onclick="bilanJeu()"/>
+              <p># de cliques : <span id="infoClick">0</span></p>
+              <h3 id="message"></h3>
+              <br />
+              <div id="resume"></div>
+              <div id="bilan" style="display: none">
+                <table id="tableBilan" border="2">
+                    <thead> 
+                        <tr>
+                            <th colspan = "2">Recap de votre partie</th>
+                        </tr>   
+                        <tr>            
+                          <th>Tours</th>
+                          <th>Temps&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="Trier" class="btn btn-success btn-lg"          id="btnTrier" name="btnTrier" onclick="trierTableau()"/></th>
+                        </tr>                       
+                    </thead>
+                    <tbody></tbody>  
+                </table>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="col"></div>
+      </div>
+    </div>
+  </body>
+</html>
